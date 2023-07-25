@@ -31,11 +31,11 @@ function App() {
             <select className="form-select" onChange={(e) => setAlgo(e.target.value)}>
               <option >Select Algorithm</option>
               <option value="FIFO">FIFO</option>
-              <option value="LRU">LCU</option>
+              <option value="LRU">LRU</option>
               <option value="Optimal">OPTIMAL</option>
             </select>
           </div>
-          <button type="submit" className="btn btn-primary">Evaluate</button>
+          <button type="submit" className="btn btn-danger">Evaluate</button>
         </form>
       </div>
       

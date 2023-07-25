@@ -1,23 +1,58 @@
-.form-container{
-  margin-top: 60px;
+/* Style the container for the form */
+.form-container {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 70vh;
   flex-direction: column;
-  /* background-color: #ffdee9; */
-  background-image: linear-gradient(0deg, #ffdee9 0%, #b5fffc 100%);
+  background-image: linear-gradient(135deg, #228B22 0%, #87CEEB 100%);
 }
 
-.form-container form{
+/* Style the form within the container */
+.form-container form {
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   padding: 20px;
-  background-color: #fff;
+  background-color: rgb(160, 209, 214);
 }
 
-.heading{
+/* Style the heading */
+.heading {
   display: flex;
   justify-content: center;
-  background-image: linear-gradient(0deg, #ffdee9 0%, #b5fffc 100%);
-  
+}
+
+/* Style the table container */
+.table-container {
+  text-align: center;
+  background-color: #fff;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  padding: 20px;
+}
+
+/* Style the table */
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.table-container th,
+.table-container td {
+  padding: 10px;
+}
+
+.table-container th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* Style the table rows */
+.table-container tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* Style the table rows on hover */
+.table-container tr:hover {
+  background-color: #e0e0e0;
 }

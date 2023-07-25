@@ -1,81 +1,76 @@
-import React,{useEffect,useState} from 'react'
+import React, { useEffect, useState } from 'react';
+import '../App.css';
 
 function FIFOAlgorithm(props) {
-  
-  let val=parseInt(props.frames);
-  let stream=props.stream;
-  let arr=stream.split(',');
-  for(let i=0;i<arr.length;i++){
-    arr[i]=parseInt(arr[i]);
-  }
-  const [pageFaults,setpageFaults]=useState()
+  const [pageFaults, setPageFaults] = useState(0);
   const [data, setData] = useState([]);
-  console.log(data)
+
   useEffect(() => {
-    // console.log(1);
-    const incomingStream = arr;
-    const frames = val;
-    let m, n, s;
-    let pages = incomingStream.length;
-    console.log("Incoming\tFrame 1\tFrame 2\tFrame 3");
-    const temp = new Array(frames).fill(-1);
-    let pageFaults=0;
-    const tempFramesArray = []; 
-    for (m = 0; m < pages; m++) {
-      s = 0;
-      for (n = 0; n < frames; n++) {
-        if (incomingStream[m] === temp[n]) {
-          s++;
-          pageFaults--;
+    // This useEffect hook is for the initialization
+    let val = parseInt(props.frames);
+    let stream = props.stream;
+    let arr = stream.split(',').map(Number);
+    let frames = val;
+    const frameItems = new Array(frames).fill(0);
+    let frameOccupied = 0;
+    let pageFaults = 0;
+    const tempFramesArray = [];
+
+    for (let i = 0; i < arr.length; i++) {
+      if (search(arr[i], frameItems, frameOccupied)) {
+        // Page hit, no page fault
+      } else {
+        if (frameOccupied < frames) {
+          frameItems[frameOccupied] = arr[i];
+          frameOccupied++;
+        } else {
+          frameItems[pageFaults % frames] = arr[i];
         }
+        pageFaults++;
       }
-      pageFaults++;
-      if (pageFaults <= frames && s === 0) {
-        temp[m] = incomingStream[m];
-      } else if (s === 0) {
-        temp[(pageFaults - 1) % frames] = incomingStream[m];
-      }
+      tempFramesArray.push([...frameItems]);
+    }
 
-      console.log(temp)
-      tempFramesArray.push([...temp]); 
+    setPageFaults(pageFaults);
+    setData(tempFramesArray);
+  }, [props.frames, props.stream]);
+
+  function search(key, frameItems, frameOccupied) {
+    for (let i = 0; i < frameOccupied; i++) {
+      if (frameItems[i] === key) {
+        return true;
+      }
+    }
+    return false;
   }
-  setpageFaults(pageFaults)
-  setData(prevData => [...prevData, ...tempFramesArray]);
-},[])
 
-// useEffect(() => {
-//     FIFO();
-// },[]);
   return (
-    <div>
-        <h1>FIFO</h1>
-        <h3>Number of PageDefaults foe the given input is:{pageFaults}</h3>
- <table className="table">
-  <thead>
-    <tr>
-      <th scope="col">Incoming</th>
-      {Array.from({ length: val }, (_, index) => (
+    <div className='table-container'>
+      <h1>FIFO</h1>
+      <h3>Number of Page Faults for the given input is: {pageFaults}</h3>
+      <table className="table">
+        <thead>
+          <tr>
+            <th scope="col">Incoming</th>
+            {Array.from({ length: props.frames }, (_, index) => (
               <th key={index} scope="col">Frame {index + 1}</th>
-      ))}
-     
-    </tr>
-  </thead>
-  <tbody>
-  {data?.map((row, rowIndex) => {
-          return(
-            <tr key={rowIndex}>
-              <td></td>
-              {row.map((value, colIndex) => (
-                <td key={colIndex}>{value !== -1 ? value : '-'}</td>
-              ))}
-            </tr>
-          );
-})}
-  </tbody>
-</table>
-
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data[0] &&
+            data.map((frames, step) => (
+              <tr key={step}>
+                <td>{step < props.stream.split(',').length ? props.stream.split(',')[step] : '-'}</td>
+                {frames.map((value, index) => (
+                  <td key={index}>{value !== 0 ? value : '-'}</td>
+                ))}
+              </tr>
+            ))}
+        </tbody>
+      </table>
     </div>
-  )
+  );
 }
 
-export default FIFOAlgorithm
+export default FIFOAlgorithm;

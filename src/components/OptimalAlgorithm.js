@@ -1,28 +1,10 @@
-import React, { useEffect } from 'react';
-
+import React, { useState, useEffect } from 'react';
+import '../App.css'
 function search(key, frameItems, frameOccupied) {
   for (let i = 0; i < frameOccupied; i++) {
-    if (frameItems[i] === key)
-      return true;
+    if (frameItems[i] === key) return true;
   }
   return false;
-}
-
-function printOuterStructure(maxFrames) {
-  console.log("Stream ");
-  for (let i = 0; i < maxFrames; i++) {
-    console.log(`Frame${i + 1} `);
-  }
-}
-
-function printCurrFrames(item, frameItems, frameOccupied, maxFrames) {
-  console.log(`\n${item} \t\t`);
-  for (let i = 0; i < maxFrames; i++) {
-    if (i < frameOccupied)
-      console.log(`${frameItems[i]} \t\t`);
-    else
-      console.log("- \t\t");
-  }
 }
 
 function predict(refStr, frameItems, refStrLen, index, frameOccupied) {
@@ -39,44 +21,73 @@ function predict(refStr, frameItems, refStrLen, index, frameOccupied) {
         break;
       }
     }
-    if (j === refStrLen)
-      return i;
+    if (j === refStrLen) return i;
   }
   return result === -1 ? 0 : result;
 }
 
 function OptimalAlgorithm(props) {
-  const maxFrames = parseInt(props.frames);
+  const maxFrames = parseInt(props.frames, 10);
   const refStr = props.stream.split(',').map(Number);
-  const frameItems = new Array(maxFrames).fill(0);
-  const refStrLen=refStr.length
-  let hits=0;
-    let frameOccupied = 0;
-    printOuterStructure(maxFrames);
+  const refStrLen = refStr.length;
+  const [framesStateArray, setFramesStateArray] = useState([]);
+  const [pageFaults, setPageFaults] = useState(0);
+
+  useEffect(() => {
+    const framesSet = new Set();
+    const frameItems = new Array(maxFrames).fill(-1);
+    const tempFramesStateArray = [];
+
+    let pageFaultsCount = 0;
+
     for (let i = 0; i < refStrLen; i++) {
-      if (search(refStr[i], frameItems, frameOccupied)) {
-        hits++;
-        printCurrFrames(refStr[i], frameItems, frameOccupied, maxFrames);
-        continue;
-      }
-      if (frameOccupied < maxFrames) {
-        frameItems[frameOccupied] = refStr[i];
-        frameOccupied++;
-        printCurrFrames(refStr[i], frameItems, frameOccupied, maxFrames);
+      if (search(refStr[i], frameItems, maxFrames)) {
+        // Page hit, no page fault
       } else {
-        const pos = predict(refStr, frameItems, refStrLen, i + 1, frameOccupied);
-        frameItems[pos] = refStr[i];
-        printCurrFrames(refStr[i], frameItems, frameOccupied, maxFrames);
+        if (framesSet.size < maxFrames) {
+          frameItems[framesSet.size] = refStr[i];
+          framesSet.add(refStr[i]);
+        } else {
+          const pos = predict(refStr, frameItems, refStrLen, i + 1, maxFrames);
+          framesSet.delete(frameItems[pos]);
+          frameItems[pos] = refStr[i];
+          framesSet.add(refStr[i]);
+          pageFaultsCount++;
+        }
       }
+      tempFramesStateArray.push([...frameItems]);
     }
-    console.log(`\n\nHits: ${hits}`);
-  
+
+    // Adjust the page faults count to include the first maxFrames entries
+    setPageFaults(pageFaultsCount + maxFrames);
+
+    setFramesStateArray(tempFramesStateArray);
+  }, [props.frames, props.stream]);
 
   return (
-    <div>
+    <div className='table-container'>
       <h1>Optimal Algorithm</h1>
-      <h4>The No of pagefaults for the given input is {refStrLen-hits}</h4>
-
+      <h4>The No of page faults for the given input is {pageFaults}</h4>
+      <table className="table">
+      <thead>
+          <tr>
+            <th scope="col">Incoming</th>
+            {Array.from({ length: maxFrames }, (_, index) => (
+              <th key={index} scope="col">Frame {index + 1}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {framesStateArray.map((frames, step) => (
+            <tr key={step}>
+              <td>{step < refStrLen ? refStr[step] : '-'}</td>
+              {frames.map((value, index) => (
+                <td key={index}>{value !== -1 ? value : '-'}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
