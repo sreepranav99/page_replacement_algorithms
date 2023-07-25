@@ -61,7 +61,7 @@ function LRUAlgorithm(props) {
 
   return (
     <div className='table-container'>
-      <h1>LRUAlgorithm</h1>
+      <h1>LRU Algorithm</h1>
       <h4>The No of page faults for the given input is {pageFault}</h4>
       <table className="table">
         <thead>

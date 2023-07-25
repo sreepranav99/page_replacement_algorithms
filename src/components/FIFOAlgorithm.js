@@ -4,7 +4,8 @@ import '../App.css';
 function FIFOAlgorithm(props) {
   const [pageFaults, setPageFaults] = useState(0);
   const [data, setData] = useState([]);
-
+  const [size,setSize]=useState(0)
+  console.log(size);
   useEffect(() => {
     // This useEffect hook is for the initialization
     let val = parseInt(props.frames);
@@ -33,6 +34,7 @@ function FIFOAlgorithm(props) {
 
     setPageFaults(pageFaults);
     setData(tempFramesArray);
+    setSize(stream.split(',').map(Number).length)
   }, [props.frames, props.stream]);
 
   function search(key, frameItems, frameOccupied) {
@@ -46,8 +48,9 @@ function FIFOAlgorithm(props) {
 
   return (
     <div className='table-container'>
-      <h1>FIFO</h1>
+      <h1>FIFO Algorithm</h1>
       <h3>Number of Page Faults for the given input is: {pageFaults}</h3>
+      {pageFaults===size && <h3 className='text-danger'>For the above input the FIFO Algorithm fails.Therefore there is a need of a better algorithm</h3>}
       <table className="table">
         <thead>
           <tr>
