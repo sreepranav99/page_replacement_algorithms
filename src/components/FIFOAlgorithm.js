@@ -81,7 +81,7 @@ function FIFOAlgorithm(props) {
     <div className='table-container'>
       <h1>FIFO Algorithm</h1>
       <h3>Number of Page Faults for the given input is: {pageFaults}</h3>
-      {p1<p2 && <h3 className='text-danger'>The given series is an Belody's Anomaly</h3>}
+      {p1<p2 && <h3 className='text-danger'>The given series causes an Belody's Anomaly</h3>}
       {pageFaults===size && <h3 className='text-danger'>For the above input the FIFO Algorithm fails.Therefore there is a need of a better algorithm</h3>}
       <table className="table">
         <thead>
