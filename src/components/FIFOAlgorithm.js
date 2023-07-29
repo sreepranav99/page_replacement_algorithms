@@ -5,6 +5,7 @@ function FIFOAlgorithm(props) {
   const [pageFaults, setPageFaults] = useState(0);
   const [data, setData] = useState([]);
   const [size,setSize]=useState(0)
+  // let val = parseInt(props.frames);
   console.log(size);
   useEffect(() => {
     // This useEffect hook is for the initialization
@@ -46,10 +47,41 @@ function FIFOAlgorithm(props) {
     return false;
   }
 
+
+  let calpagefaults = (rame)=>{
+    let stream = props.stream;
+    let arr1 = stream.split(',').map(Number);
+    let frame = rame;
+    const frameItem = new Array(frame).fill(0);
+    let frameOccu = 0;
+    let pageFault = 0;
+
+    for (let i = 0; i < arr1.length; i++) {
+      if (search(arr1[i], frameItem, frameOccu)) {
+        // Page hit, no page fault
+      } else {
+        if (frameOccu < frame) {
+          frameItem[frameOccu] = arr1[i];
+          frameOccu++;
+        } else {
+          frameItem[pageFault % frame] = arr1[i];
+        }
+        pageFault++;
+      }
+    }
+
+    return pageFault;
+  }
+  
+  let p2=calpagefaults(parseInt(props.frames)+1);
+  let p1=calpagefaults(parseInt(props.frames));
+  console.log(p1,p2);
+
   return (
     <div className='table-container'>
       <h1>FIFO Algorithm</h1>
       <h3>Number of Page Faults for the given input is: {pageFaults}</h3>
+      {p1<p2 && <h3 className='text-danger'>The given series is an Belody's Anomaly</h3>}
       {pageFaults===size && <h3 className='text-danger'>For the above input the FIFO Algorithm fails.Therefore there is a need of a better algorithm</h3>}
       <table className="table">
         <thead>
