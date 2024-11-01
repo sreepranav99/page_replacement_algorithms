@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import '../App.css'
+import '../App.css';
+
 function LRUAlgorithm(props) {
   const capacity = parseInt(props.frames);
   const pages = props.stream.split(',').map(Number);
@@ -12,38 +13,40 @@ function LRUAlgorithm(props) {
     const framesStateArray = []; // Array to store frames' state at each step
 
     for (let i = 0; i < pages.length; i++) {
+      let currentFrames = Array.from(s); // Get current state of frames
+
       if (s.size < capacity) {
         if (!s.has(pages[i])) {
-          s = new Set(s).add(pages[i]);
+          s.add(pages[i]);
           pageFaults++;
         }
-        indexes = new Map(indexes).set(pages[i], i);
+        indexes.set(pages[i], i);
       } else {
         if (!s.has(pages[i])) {
-          let lru = Number.MAX_VALUE,
-            val = Number.MIN_VALUE;
+          let lru = Number.MAX_VALUE, val = -1;
 
-          for (const itr of s.values()) {
-            const temp = itr;
-            if (indexes.get(temp) < lru) {
-              lru = indexes.get(temp);
-              val = temp;
+          for (const item of s) {
+            if (indexes.get(item) < lru) {
+              lru = indexes.get(item);
+              val = item;
             }
           }
 
-          s = new Set(s);
           s.delete(val);
           s.add(pages[i]);
-          indexes = new Map(indexes);
           indexes.delete(val);
-
           pageFaults++;
         }
-        indexes = new Map(indexes).set(pages[i], i);
+        indexes.set(pages[i], i);
       }
 
-      // Store the frames' state at each step in the array
-      framesStateArray.push([...s]);
+      // Ensure the current frames array is filled to the full capacity
+      currentFrames = Array.from(s);
+      while (currentFrames.length < capacity) {
+        currentFrames.push(null); // Fill empty frames with `null` for displaying dashes
+      }
+
+      framesStateArray.push(currentFrames);
     }
 
     return { pageFaults, framesStateArray };
@@ -60,24 +63,26 @@ function LRUAlgorithm(props) {
   }, [capacity, pages]);
 
   return (
-    <div className='table-container'>
-      <h1>LRU Algorithm</h1>
-      <h4>The No of page faults for the given input is {pageFault}</h4>
-      <table className="table">
-        <thead>
+    <div className='container mt-4'>
+      <h1 className='mb-4 text-center text-primary'>LRU Algorithm Simulation</h1>
+      <div className='alert alert-info text-center'>
+        <h4>Number of Page Faults: <span className='badge bg-warning text-dark'>{pageFault}</span></h4>
+      </div>
+      <table className='table table-hover table-bordered mt-4'>
+        <thead className='table-dark'>
           <tr>
-            <th scope="col">Incoming</th>
+            <th scope='col'>Incoming</th>
             {Array.from({ length: capacity }, (_, index) => (
-              <th key={index} scope="col">Frame {index + 1}</th>
+              <th key={index} scope='col'>Frame {index + 1}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {framesStateArray?.map((frames, step) => (
-            <tr key={step}>
+          {framesStateArray.map((frames, step) => (
+            <tr key={step} className={frames.includes(pages[step]) ? 'table-success' : 'table-danger'}>
               <td>{pages[step]}</td>
               {frames.map((value, index) => (
-                <td key={index}>{value !== -1 ? value : '-'}</td>
+                <td key={index} className='text-center'>{value !== null ? value : <span style={{ color: '#6c757d' }}>-</span>}</td>
               ))}
             </tr>
           ))}

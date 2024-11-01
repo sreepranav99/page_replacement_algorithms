@@ -1,11 +1,28 @@
 /* Style the container for the form */
+.heading {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #fff;
+}
+
 .form-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 70vh;
-  flex-direction: column;
-  background-image: linear-gradient(135deg, #228B22 0%, #87CEEB 100%);
+  margin-top: 2rem;
+}
+
+.results-container {
+  padding: 2rem;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+}
+
+button:focus, input:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+#result{  
+  text-align: center;
+  font-size: 3rem;
 }
 
 /* Style the form within the container */
@@ -13,12 +30,6 @@
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   padding: 20px;
   background-color: rgb(160, 209, 214);
-}
-
-/* Style the heading */
-.heading {
-  display: flex;
-  justify-content: center;
 }
 
 /* Style the table container */
@@ -56,3 +67,127 @@
 .table-container tr:hover {
   background-color: #e0e0e0;
 }
+
+.container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+h1, h4 {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.table {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.table-bordered th, .table-bordered td {
+  border: 1px solid #dee2e6;
+}
+
+.table-dark th {
+  background-color: #343a40;
+  color: #fff;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.table-success td {
+  background-color: #d4edda !important;
+}
+
+.table-danger td {
+  background-color: #f8d7da !important;
+}
+
+.alert {
+  margin-bottom: 20px;
+  padding: 15px;
+  border-radius: 5px;
+  font-size: 1.1rem;
+}
+
+.badge {
+  font-size: 1rem;
+  padding: 0.5em 0.75em;
+  border-radius: 0.5rem;
+}
+
+.bg-warning {
+  background-color: #ffc107 !important;
+  color: #212529;
+}
+.container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+h1, h4 {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.table {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.table-bordered th, .table-bordered td {
+  border: 1px solid #dee2e6;
+}
+
+.table-dark th {
+  background-color: #343a40;
+  color: #fff;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.table-success td {
+  background-color: #d4edda !important;
+}
+
+.table-danger td {
+  background-color: #f8d7da !important;
+}
+
+.alert {
+  margin-bottom: 20px;
+  padding: 15px;
+  border-radius: 5px;
+  font-size: 1.1rem;
+}
+
+.badge {
+  font-size: 1rem;
+  padding: 0.5em 0.75em;
+  border-radius: 0.5rem;
+}
+
+.bg-warning {
+  background-color: #ffc107 !important;
+  color: #212529;
+}
+

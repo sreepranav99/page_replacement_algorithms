@@ -4,29 +4,41 @@ import '../App.css';
 function FIFOAlgorithm(props) {
   const [pageFaults, setPageFaults] = useState(0);
   const [data, setData] = useState([]);
-  const [size,setSize]=useState(0)
-  // let val = parseInt(props.frames);
-  console.log(size);
+  const [size, setSize] = useState(0);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
-    // This useEffect hook is for the initialization
-    let val = parseInt(props.frames);
-    let stream = props.stream;
-    let arr = stream.split(',').map(Number);
-    let frames = val;
-    const frameItems = new Array(frames).fill(0);
+    if (validateInput(props.frames, props.stream)) {
+      calculatePageFaults();
+      setError(null);
+    } else {
+      setError('Invalid input. Please check your frames or stream input.');
+    }
+  }, [props.frames, props.stream]);
+
+  const validateInput = (frames, stream) => {
+    return (
+      !isNaN(frames) &&
+      frames > 0 &&
+      stream.split(',').every(num => !isNaN(Number(num.trim())) && num.trim() !== '')
+    );
+  };
+
+  const calculatePageFaults = () => {
+    let frames = parseInt(props.frames);
+    let stream = props.stream.split(',').map(Number);
+    const frameItems = new Array(frames).fill(null);
     let frameOccupied = 0;
     let pageFaults = 0;
     const tempFramesArray = [];
 
-    for (let i = 0; i < arr.length; i++) {
-      if (search(arr[i], frameItems, frameOccupied)) {
-        // Page hit, no page fault
-      } else {
+    for (let i = 0; i < stream.length; i++) {
+      if (!search(stream[i], frameItems, frameOccupied)) {
         if (frameOccupied < frames) {
-          frameItems[frameOccupied] = arr[i];
+          frameItems[frameOccupied] = stream[i];
           frameOccupied++;
         } else {
-          frameItems[pageFaults % frames] = arr[i];
+          frameItems[pageFaults % frames] = stream[i];
         }
         pageFaults++;
       }
@@ -35,75 +47,76 @@ function FIFOAlgorithm(props) {
 
     setPageFaults(pageFaults);
     setData(tempFramesArray);
-    setSize(stream.split(',').map(Number).length)
-  }, [props.frames, props.stream]);
+    setSize(stream.length);
+  };
 
-  function search(key, frameItems, frameOccupied) {
+  const search = (key, frameItems, frameOccupied) => {
     for (let i = 0; i < frameOccupied; i++) {
       if (frameItems[i] === key) {
         return true;
       }
     }
     return false;
-  }
+  };
 
+  const calculateAdditionalPageFaults = (frameSize) => {
+    let stream = props.stream.split(',').map(Number);
+    const frameItems = new Array(frameSize).fill(null);
+    let frameOccupied = 0;
+    let pageFaults = 0;
 
-  let calpagefaults = (rame)=>{
-    let stream = props.stream;
-    let arr1 = stream.split(',').map(Number);
-    let frame = rame;
-    const frameItem = new Array(frame).fill(0);
-    let frameOccu = 0;
-    let pageFault = 0;
-
-    for (let i = 0; i < arr1.length; i++) {
-      if (search(arr1[i], frameItem, frameOccu)) {
-        // Page hit, no page fault
-      } else {
-        if (frameOccu < frame) {
-          frameItem[frameOccu] = arr1[i];
-          frameOccu++;
+    for (let i = 0; i < stream.length; i++) {
+      if (!search(stream[i], frameItems, frameOccupied)) {
+        if (frameOccupied < frameSize) {
+          frameItems[frameOccupied] = stream[i];
+          frameOccupied++;
         } else {
-          frameItem[pageFault % frame] = arr1[i];
+          frameItems[pageFaults % frameSize] = stream[i];
         }
-        pageFault++;
+        pageFaults++;
       }
     }
 
-    return pageFault;
-  }
-  
-  let p2=calpagefaults(parseInt(props.frames)+1);
-  let p1=calpagefaults(parseInt(props.frames));
-  console.log(p1,p2);
+    return pageFaults;
+  };
+
+  const p1 = calculateAdditionalPageFaults(parseInt(props.frames));
+  const p2 = calculateAdditionalPageFaults(parseInt(props.frames) + 1);
 
   return (
-    <div className='table-container'>
-      <h1>FIFO Algorithm</h1>
-      <h3>Number of Page Faults for the given input is: {pageFaults}</h3>
-      {p1<p2 && <h3 className='text-danger'>The given series causes an Belody's Anomaly</h3>}
-      {pageFaults===size && <h3 className='text-danger'>For the above input the FIFO Algorithm fails.Therefore there is a need of a better algorithm</h3>}
-      <table className="table">
-        <thead>
-          <tr>
-            <th scope="col">Incoming</th>
-            {Array.from({ length: props.frames }, (_, index) => (
-              <th key={index} scope="col">Frame {index + 1}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data[0] &&
-            data.map((frames, step) => (
-              <tr key={step}>
-                <td>{step < props.stream.split(',').length ? props.stream.split(',')[step] : '-'}</td>
-                {frames.map((value, index) => (
-                  <td key={index}>{value !== 0 ? value : '-'}</td>
+    <div className='container mt-4'>
+      <h1 className='mb-4 text-center text-primary'>FIFO Algorithm Simulation</h1>
+      {error ? (
+        <div className='alert alert-danger text-center' role='alert'>
+          {error}
+        </div>
+      ) : (
+        <>
+          <div className='alert alert-info text-center'>
+            <h4>Number of Page Faults: <span className='badge bg-warning text-dark'>{pageFaults}</span></h4>
+          </div>
+          <table className='table table-hover table-bordered mt-4'>
+            <thead className='table-dark'>
+              <tr>
+                <th scope='col'>Incoming</th>
+                {Array.from({ length: props.frames }, (_, index) => (
+                  <th key={index} scope='col'>Frame {index + 1}</th>
                 ))}
               </tr>
-            ))}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {data.map((frames, step) => (
+                <tr key={step} className={frames.includes(parseInt(props.stream.split(',')[step])) ? 'table-success' : 'table-danger'}>
+                  <td>{props.stream.split(',')[step]}</td>
+                  {frames.map((value, index) => (
+                    <td key={index} className='text-center'>{value !== null ? value : '-'}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
     </div>
   );
 }

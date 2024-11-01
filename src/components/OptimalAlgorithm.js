@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import '../App.css'
+import '../App.css';
+
 function search(key, frameItems, frameOccupied) {
   for (let i = 0; i < frameOccupied; i++) {
     if (frameItems[i] === key) return true;
@@ -37,7 +38,6 @@ function OptimalAlgorithm(props) {
     const framesSet = new Set();
     const frameItems = new Array(maxFrames).fill(-1);
     const tempFramesStateArray = [];
-
     let pageFaultsCount = 0;
 
     for (let i = 0; i < refStrLen; i++) {
@@ -60,29 +60,30 @@ function OptimalAlgorithm(props) {
 
     // Adjust the page faults count to include the first maxFrames entries
     setPageFaults(pageFaultsCount + maxFrames);
-
     setFramesStateArray(tempFramesStateArray);
   }, [props.frames, props.stream]);
 
   return (
-    <div className='table-container'>
-      <h1>Optimal Algorithm</h1>
-      <h4>The No of page faults for the given input is {pageFaults}</h4>
-      <table className="table">
-      <thead>
+    <div className='container mt-4'>
+      <h1 className='mb-4 text-center text-info'>Optimal Algorithm Simulation</h1>
+      <div className='alert alert-info text-center'>
+        <h4>Number of Page Faults: <span className='badge bg-warning text-dark'>{pageFaults}</span></h4>
+      </div>
+      <table className='table table-hover table-bordered mt-4'>
+        <thead className='table-dark'>
           <tr>
-            <th scope="col">Incoming</th>
+            <th scope='col'>Incoming</th>
             {Array.from({ length: maxFrames }, (_, index) => (
-              <th key={index} scope="col">Frame {index + 1}</th>
+              <th key={index} scope='col'>Frame {index + 1}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {framesStateArray.map((frames, step) => (
-            <tr key={step}>
+            <tr key={step} className={frames.includes(refStr[step]) ? 'table-success' : 'table-danger'}>
               <td>{step < refStrLen ? refStr[step] : '-'}</td>
               {frames.map((value, index) => (
-                <td key={index}>{value !== -1 ? value : '-'}</td>
+                <td key={index} className='text-center'>{value !== -1 ? value : '-'}</td>
               ))}
             </tr>
           ))}
