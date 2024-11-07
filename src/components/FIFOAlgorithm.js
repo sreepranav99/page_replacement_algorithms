@@ -4,7 +4,6 @@ import '../App.css';
 function FIFOAlgorithm(props) {
   const [pageFaults, setPageFaults] = useState(0);
   const [data, setData] = useState([]);
-  const [size, setSize] = useState(0);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -12,11 +11,12 @@ function FIFOAlgorithm(props) {
       calculatePageFaults();
       setError(null);
     } else {
-      setError('Invalid input. Please check your frames or stream input.');
+      setError('Invalid input. Please ensure there is at least 1 frame and the input stream is correct.');
     }
   }, [props.frames, props.stream]);
 
   const validateInput = (frames, stream) => {
+    // Check if frames is a number, greater than 0, and if the stream input is valid
     return (
       !isNaN(frames) &&
       frames > 0 &&
@@ -47,45 +47,18 @@ function FIFOAlgorithm(props) {
 
     setPageFaults(pageFaults);
     setData(tempFramesArray);
-    setSize(stream.length);
   };
 
   const search = (key, frameItems, frameOccupied) => {
     for (let i = 0; i < frameOccupied; i++) {
-      if (frameItems[i] === key) {
-        return true;
-      }
+      if (frameItems[i] === key) return true;
     }
     return false;
   };
 
-  const calculateAdditionalPageFaults = (frameSize) => {
-    let stream = props.stream.split(',').map(Number);
-    const frameItems = new Array(frameSize).fill(null);
-    let frameOccupied = 0;
-    let pageFaults = 0;
-
-    for (let i = 0; i < stream.length; i++) {
-      if (!search(stream[i], frameItems, frameOccupied)) {
-        if (frameOccupied < frameSize) {
-          frameItems[frameOccupied] = stream[i];
-          frameOccupied++;
-        } else {
-          frameItems[pageFaults % frameSize] = stream[i];
-        }
-        pageFaults++;
-      }
-    }
-
-    return pageFaults;
-  };
-
-  const p1 = calculateAdditionalPageFaults(parseInt(props.frames));
-  const p2 = calculateAdditionalPageFaults(parseInt(props.frames) + 1);
-
   return (
-    <div className='container mt-4'>
-      <h1 className='mb-4 text-center text-primary'>FIFO Algorithm Simulation</h1>
+    <div className='container1 mt-4'>
+      <h1 className='mb-4 text-danger text-center'>FIFO Algorithm Simulation</h1>
       {error ? (
         <div className='alert alert-danger text-center' role='alert'>
           {error}
@@ -93,9 +66,9 @@ function FIFOAlgorithm(props) {
       ) : (
         <>
           <div className='alert alert-info text-center'>
-            <h4>Number of Page Faults: <span className='badge bg-warning text-dark'>{pageFaults}</span></h4>
+            <h4 className='res' >Number of Page Faults: <span className='badge bg-warning'>{pageFaults}</span></h4>
           </div>
-          <table className='table table-hover table-bordered mt-4'>
+          <table className='table table-hover table-bordered'>
             <thead className='table-dark'>
               <tr>
                 <th scope='col'>Incoming</th>
@@ -109,7 +82,7 @@ function FIFOAlgorithm(props) {
                 <tr key={step} className={frames.includes(parseInt(props.stream.split(',')[step])) ? 'table-success' : 'table-danger'}>
                   <td>{props.stream.split(',')[step]}</td>
                   {frames.map((value, index) => (
-                    <td key={index} className='text-center'>{value !== null ? value : '-'}</td>
+                    <td key={index} className='text-center'>{value !== null ? value : ''}</td>
                   ))}
                 </tr>
               ))}

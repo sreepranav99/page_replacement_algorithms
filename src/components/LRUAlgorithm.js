@@ -55,39 +55,60 @@ function LRUAlgorithm(props) {
   // State variables to track the page fault count and frames' state array
   const [pageFault, setPageFault] = useState(0);
   const [framesStateArray, setFramesStateArray] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const { pageFaults, framesStateArray } = findPageFaults(pages, capacity);
-    setPageFault(pageFaults);
-    setFramesStateArray(framesStateArray);
+    if (validateInput(capacity, pages)) {
+      const { pageFaults, framesStateArray } = findPageFaults(pages, capacity);
+      setPageFault(pageFaults);
+      setFramesStateArray(framesStateArray);
+      setError(null); // Clear any previous error
+    } else {
+      setError("Invalid input. Please ensure there is at least 1 frame and the input stream is correct.");
+      setPageFault(0); // Reset page fault count
+      setFramesStateArray([]); // Clear frames state array
+    }
   }, [capacity, pages]);
 
+  const validateInput = (capacity, pages) => {
+    // Ensure capacity is a positive number and that pages are valid numbers
+    return capacity > 0 && pages.every(page => !isNaN(page));
+  };
+
   return (
-    <div className='container mt-4'>
-      <h1 className='mb-4 text-center text-primary'>LRU Algorithm Simulation</h1>
-      <div className='alert alert-info text-center'>
-        <h4>Number of Page Faults: <span className='badge bg-warning text-dark'>{pageFault}</span></h4>
-      </div>
-      <table className='table table-hover table-bordered mt-4'>
-        <thead className='table-dark'>
-          <tr>
-            <th scope='col'>Incoming</th>
-            {Array.from({ length: capacity }, (_, index) => (
-              <th key={index} scope='col'>Frame {index + 1}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {framesStateArray.map((frames, step) => (
-            <tr key={step} className={frames.includes(pages[step]) ? 'table-success' : 'table-danger'}>
-              <td>{pages[step]}</td>
-              {frames.map((value, index) => (
-                <td key={index} className='text-center'>{value !== null ? value : <span style={{ color: '#6c757d' }}>-</span>}</td>
+    <div className='container1 mt-4'>
+      <h1 className='mb-4 text-center text-danger'>LRU Algorithm Simulation</h1>
+      {error ? (
+        <div className='alert alert-danger text-center' role='alert'>
+          {error}
+        </div>
+      ) : (
+        <>
+          <div className='alert alert-info text-center'>
+            <h4 className='res'>Number of Page Faults: <span className='badge bg-warning text-dark'>{pageFault}</span></h4>
+          </div>
+          <table className='table table-hover table-bordered mt-4'>
+            <thead className='table-dark'>
+              <tr>
+                <th scope='col'>Incoming</th>
+                {Array.from({ length: capacity }, (_, index) => (
+                  <th key={index} scope='col'>Frame {index + 1}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {framesStateArray.map((frames, step) => (
+                <tr key={step} className={frames.includes(pages[step]) ? 'table-success' : 'table-danger'}>
+                  <td>{pages[step]}</td>
+                  {frames.map((value, index) => (
+                    <td key={index} className='text-center'>{value !== null ? value : <span style={{ color: '#6c757d' }}>-</span>}</td>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            </tbody>
+          </table>
+        </>
+      )}
     </div>
   );
 }
